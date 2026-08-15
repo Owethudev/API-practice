@@ -1,5 +1,6 @@
 const express = require("express");
 const { nanoid } = require("nanoid");
+const nodemon = require("nodemon");
 
 const app = express();
 
@@ -36,6 +37,27 @@ app.get("/tasks/:id", (req, res) => {
   }
 
   res.json(task);
+});
+
+app.post("/tasks", (req, res) => {
+  const { title } = req.body;
+
+  if (!title) {
+    return res.status(400).json({
+      message: "Title is required",
+    });
+  }
+
+  const newTask = {
+    id: nanoid(),
+    title,
+    complete: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  tasks.push(newTask);
+
+  res.status(201).json(newTask);
 });
 
 
