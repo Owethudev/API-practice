@@ -19,7 +19,6 @@ const tasks = [
   },
   {
     id: nanoid(),
-    title: "Clean the office",
     complete: true,
     createdAt: new Date().toISOString(),
   },
@@ -27,6 +26,31 @@ const tasks = [
 
 app.get("/tasks", (req, res) => {
   res.json(tasks);
+});
+
+app.get("/tasks/:id/verify", async (req, res) => {
+  const task = tasks.find((task) => task.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1500);
+  });
+
+  if (!task.title) {
+    return res.status(400).json({
+      message: "Task is missing the required title field",
+    });
+  }
+
+  res.json({
+    message: "Task verified successfully",
+    task,
+  });
 });
 
 app.get("/tasks/:id", (req, res) => {
