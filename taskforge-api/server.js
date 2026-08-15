@@ -60,6 +60,29 @@ app.post("/tasks", (req, res) => {
   res.status(201).json(newTask);
 });
 
+app.put("/tasks/:id", (req, res) => {
+  const task = tasks.find((task) => task.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  const { title, complete } = req.body;
+
+  if (!title) {
+    return res.status(400).json({
+      message: "Title is required",
+    });
+  }
+
+  task.title = title;
+  task.complete = complete ?? false;
+
+  res.json(task);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
