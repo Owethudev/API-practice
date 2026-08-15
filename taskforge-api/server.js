@@ -1,11 +1,13 @@
 const express = require("express");
 const { nanoid } = require("nanoid");
 const nodemon = require("nodemon");
+const logger = require("./middleware/logger");
 
 const app = express();
 
 const PORT = 3000;
 
+app.use(logger);
 app.use(express.json());
 
 const tasks = [
