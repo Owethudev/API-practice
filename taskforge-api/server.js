@@ -22,6 +22,11 @@ const tasks = [
   },
 ];
 
+app.get("/tasks", (req, res) => {
+  res.json(tasks);
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
