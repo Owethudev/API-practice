@@ -26,6 +26,18 @@ app.get("/tasks", (req, res) => {
   res.json(tasks);
 });
 
+app.get("/tasks/:id", (req, res) => {
+  const task = tasks.find((task) => task.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  res.json(task);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
