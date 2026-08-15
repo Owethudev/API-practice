@@ -83,6 +83,24 @@ app.put("/tasks/:id", (req, res) => {
   res.json(task);
 });
 
+app.delete("/tasks/:id", (req, res) => {
+  const taskIndex = tasks.findIndex(
+    (task) => task.id === req.params.id
+  );
+
+  if (taskIndex === -1) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  tasks.splice(taskIndex, 1);
+
+  res.json({
+    message: "Task deleted successfully",
+  });
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
