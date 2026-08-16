@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskForge</title>
+</head>
+
+<body>
+  <h1>TaskForge</h1>
+
+  <ul id="tasks"></ul>
+
+  <script>
+    const tasksList = document.getElementById("tasks");
+
+    async function loadTasks() {
+      const response = await fetch("/tasks");
+      const tasks = await response.json();
+
+      tasksList.innerHTML = "";
+
+      tasks.forEach((task) => {
+        const listItem = document.createElement("li");
+
+        listItem.textContent =
+          `${task.title || "Untitled task"} - ` +
+          `${task.complete ? "Complete" : "Incomplete"}`;
+
+        tasksList.appendChild(listItem);
+      });
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>

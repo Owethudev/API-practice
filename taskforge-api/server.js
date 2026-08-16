@@ -7,11 +7,11 @@ const app = express();
 
 const PORT = 3000;
 
-app.use(logger);
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(logger);
+app.use(express.static("public"));
 app.use("/tasks", tasksRoutes);
-
+app.use(express.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

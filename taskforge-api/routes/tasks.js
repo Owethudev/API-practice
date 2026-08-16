@@ -21,10 +21,39 @@ const writeTasks = async (tasks) => {
   );
 };
 
+
+
 router.get("/", async (req, res) => {
   const tasks = await readTasks();
 
   res.json(tasks);
+});
+
+router.get("/:id/verify", async (req, res) => {
+  const tasks = await readTasks();
+
+  const task = tasks.find((task) => task.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1500);
+  });
+
+  if (!task.title) {
+    return res.status(400).json({
+      message: "Task is missing the required title field",
+    });
+  }
+
+  res.json({
+    message: "Task verified successfully",
+    task,
+  });
 });
 
 router.get("/:id", async (req, res) => {
