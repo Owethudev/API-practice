@@ -18,4 +18,18 @@ router.get("/", async (req, res) => {
   res.json(tasks);
 });
 
+router.get("/:id", async (req, res) => {
+  const tasks = await readTasks();
+
+  const task = tasks.find((task) => task.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  res.json(task);
+});
+
 module.exports = router;
