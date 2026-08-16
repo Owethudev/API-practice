@@ -42,7 +42,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title } = req.body;
+  const { title } = req.body || {};
 
   if (!title || typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const { title, complete } = req.body;
+  const { title, complete } = req.body || {};
 
   if (!title || typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({
@@ -97,6 +97,26 @@ router.put("/:id", async (req, res) => {
   await writeTasks(tasks);
 
   res.json(task);
+});
+
+router.delete("/:id", async (req, res) => {
+  const tasks = await readTasks();
+
+  const taskIndex = tasks.findIndex(
+    (task) => task.id === req.params.id
+  );
+
+  if (taskIndex === -1) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  tasks.splice(taskIndex, 1);
+
+  await writeTasks(tasks);
+
+  res.status(204).send();
 });
 
 module.exports = router;

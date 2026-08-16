@@ -6,12 +6,6 @@
     "createdAt": "2026-08-16T00:00:00.000Z"
   },
   {
-    "id": "task-2",
-    "title": "Clean the office",
-    "complete": true,
-    "createdAt": "2026-08-16T00:00:00.000Z"
-  },
-  {
     "id": "task-3",
     "complete": false,
     "createdAt": "2026-08-16T00:00:00.000Z"
