@@ -2,7 +2,7 @@
   {
     "id": "task-1",
     "title": "Mow the entire lawn",
-    "complete": false,
+    "complete": true,
     "createdAt": "2026-08-16T00:00:00.000Z"
   },
   {
