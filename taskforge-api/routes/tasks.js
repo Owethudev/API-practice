@@ -5,6 +5,11 @@ const { nanoid } = require("nanoid");
 
 const router = express.Router();
 
+// helper to forward errors from async route handlers
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 const tasksFilePath = path.join(__dirname, "../data/tasks.json");
 
 const readTasks = async () => {
@@ -23,129 +28,141 @@ const writeTasks = async (tasks) => {
 
 
 
-router.get("/", async (req, res) => {
-  const tasks = await readTasks();
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const tasks = await readTasks();
 
-  res.json(tasks);
-});
+    res.json(tasks);
+  })
+);
 
-router.get("/:id/verify", async (req, res) => {
-  const tasks = await readTasks();
+router.get(
+  "/:id/verify",
+  asyncHandler(async (req, res) => {
+    const tasks = await readTasks();
 
-  const task = tasks.find((task) => task.id === req.params.id);
+    const task = tasks.find((task) => task.id === req.params.id);
 
-  if (!task) {
-    return res.status(404).json({
-      message: "Task not found",
-    });
-  }
+    if (!task) {
+      const error = new Error("Task not found");
+      error.status = 404;
+      throw error;
+    }
 
-  await new Promise((resolve) => {
-    setTimeout(resolve, 1500);
-  });
+    // simulate delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  if (!task.title) {
-    return res.status(400).json({
-      message: "Task is missing the required title field",
-    });
-  }
+    if (!task.title || typeof task.title !== "string" || task.title.trim() === "") {
+      const error = new Error("Task is missing the required title field");
+      error.status = 400;
+      throw error;
+    }
 
-  res.json({
-    message: "Task verified successfully",
-    task,
-  });
-});
+    res.json({ message: "Task verified successfully", task });
+  })
+);
 
-router.get("/:id", async (req, res) => {
-  const tasks = await readTasks();
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const tasks = await readTasks();
 
-  const task = tasks.find((task) => task.id === req.params.id);
+    const task = tasks.find((task) => task.id === req.params.id);
 
-  if (!task) {
-    return res.status(404).json({
-      message: "Task not found",
-    });
-  }
+    if (!task) {
+      const error = new Error("Task not found");
+      error.status = 404;
+      throw error;
+    }
 
-  res.json(task);
-});
+    res.json(task);
+  })
+);
 
-router.post("/", async (req, res) => {
-  const { title } = req.body || {};
+router.post(
+  "/",
+  asyncHandler(async (req, res) => {
+    const { title } = req.body || {};
 
-  if (!title || typeof title !== "string" || title.trim() === "") {
-    return res.status(400).json({
-      message: "Title is required",
-    });
-  }
+    if (!title || typeof title !== "string" || title.trim() === "") {
+      const error = new Error("Title is required");
+      error.status = 400;
+      throw error;
+    }
 
-  const tasks = await readTasks();
+    const tasks = await readTasks();
 
-  const newTask = {
-    id: nanoid(),
-    title: title.trim(),
-    complete: false,
-    createdAt: new Date().toISOString(),
-  };
+    const newTask = {
+      id: nanoid(),
+      title: title.trim(),
+      complete: false,
+      createdAt: new Date().toISOString(),
+    };
 
-  tasks.push(newTask);
+    tasks.push(newTask);
 
-  await writeTasks(tasks);
+    await writeTasks(tasks);
 
-  res.status(201).json(newTask);
-});
+    res.status(201).json(newTask);
+  })
+);
 
-router.put("/:id", async (req, res) => {
-  const { title, complete } = req.body || {};
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const { title, complete } = req.body || {};
 
-  if (!title || typeof title !== "string" || title.trim() === "") {
-    return res.status(400).json({
-      message: "Title is required",
-    });
-  }
+    if (!title || typeof title !== "string" || title.trim() === "") {
+      const error = new Error("Title is required");
+      error.status = 400;
+      throw error;
+    }
 
-  if (typeof complete !== "boolean") {
-    return res.status(400).json({
-      message: "Complete must be a boolean",
-    });
-  }
+    if (typeof complete !== "boolean") {
+      const error = new Error("Complete must be a boolean");
+      error.status = 400;
+      throw error;
+    }
 
-  const tasks = await readTasks();
+    const tasks = await readTasks();
 
-  const task = tasks.find((task) => task.id === req.params.id);
+    const task = tasks.find((task) => task.id === req.params.id);
 
-  if (!task) {
-    return res.status(404).json({
-      message: "Task not found",
-    });
-  }
+    if (!task) {
+      const error = new Error("Task not found");
+      error.status = 404;
+      throw error;
+    }
 
-  task.title = title.trim();
-  task.complete = complete;
+    task.title = title.trim();
+    task.complete = complete;
 
-  await writeTasks(tasks);
+    await writeTasks(tasks);
 
-  res.json(task);
-});
+    res.json(task);
+  })
+);
 
-router.delete("/:id", async (req, res) => {
-  const tasks = await readTasks();
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const tasks = await readTasks();
 
-  const taskIndex = tasks.findIndex(
-    (task) => task.id === req.params.id
-  );
+    const taskIndex = tasks.findIndex((task) => task.id === req.params.id);
 
-  if (taskIndex === -1) {
-    return res.status(404).json({
-      message: "Task not found",
-    });
-  }
+    if (taskIndex === -1) {
+      const error = new Error("Task not found");
+      error.status = 404;
+      throw error;
+    }
 
-  tasks.splice(taskIndex, 1);
+    tasks.splice(taskIndex, 1);
 
-  await writeTasks(tasks);
+    await writeTasks(tasks);
 
-  res.status(204).send();
-});
+    res.status(204).send();
+  })
+);
 
 module.exports = router;
